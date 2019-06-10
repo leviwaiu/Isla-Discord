@@ -3,6 +3,7 @@ var logger  = require('winston');
 var auth    = require('./auth.json');
 
 var Twitter = require('twitter');
+var YouTube = require('youtube-node');
 
 logger.remove(logger.transports.Console);
 logger.add(new logger.transports.Console, { colorize: true});
@@ -18,6 +19,9 @@ var twitterClient = new Twitter({
     access_token_key: auth.twitter.access_token_key,
     access_token_secret: auth.twitter.access_token_secret
 });
+
+var youtubeClient = new YouTube();
+youtubeClient.setKey(auth.youtube.key);
 
 bot.on('ready', function(evt) {
     logger.info('Connected');
@@ -36,32 +40,32 @@ bot.on('message', function(user, userID, channelID, message, evt) {
             case 'help':
                 bot.sendMessage({
                     to: channelID,
-                    message: "Here are the list of currently usable commands \n hello \n help"
+                    message: "Here are the list of currently usable commands \n hello \n help \n roll \n twitter"
                 });
                 break;
             
             case 'hello':
                 bot.sendMessage({
                     to: channelID,
-                    message: "Hello! It's nice to see you!"
+                    message: "Hello! It's nice to see you! (^-^)/"
                 });
             break;
             
             case 'twitter':
-                handle = args;
-                twitterClient.get('users/show', {screen_name : handle[0]}, function(error, tweet, response) {
+                handle = args[0];
+                twitterClient.get('users/show', {screen_name : handle}, function(error, tweet, response) {
                     if(error) {
                         if(error[0].code === 50){
                             bot.sendMessage({
                                 to: channelID,
-                                message: error[0].message                                
+                                message: "I can't find the user, sorry... (◜०﹏०◝)"                               
                             });
                         } else {
                         logger.info(error);
                         throw error;
                         };
                     } else {
-                    user_url = "https://twitter.com/" + tweet.screen_name;
+                    user_url = "(^▽^)o Here you go: https://twitter.com/" + tweet.screen_name;
                     bot.sendMessage({
                         to: channelID,
                         message: user_url
@@ -70,10 +74,59 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                 });
             break;
             
+            case 'roll':
+                numbers = 10;
+                if(args.length > 0){
+                    if(args[0] < Number.MAX_VALUE){
+                        numbers = args[0];
+                    } else {
+                        numbers = -1;
+                    }
+                }
+                
+                if(numbers > 0){
+                    randomNumber = Math.floor(Math.random() * Math.floor(numbers));
+                    resultString = "You rolled a " + randomNumber.toString(10) + "!";
+                    bot.sendMessage({
+                        to: channelID,
+                        message: resultString
+                    });
+                } else {
+                    bot.sendMessage({
+                        to: channelID,
+                        message: "What is with that invalid number, baka! ( ꒪Д꒪)ノ"
+                    });
+                }
+            break;
+                
+            case 'youtube':
+                search = args.join();
+                youtubeClient.search(search, 1, function(error, result) {
+                    if(error) {
+                        logger.info(error);
+                    }
+                    else {
+                        if(result.items[0].id.kind === "youtube#video"){
+                            result_url = "(^▽^)o Here's the top result: \n https://youtube.com/watch?v=" + result.items[0].id.videoId;
+                            bot.sendMessage({
+                                to: channelID,
+                                message: result_url
+                            });
+                        } else if(result.items[0].id.kind === "youtube#channel") {
+                            result_url = "It seems like the top result is a channel! Here you go: \n https://yotube.com/channel/" + result.items[0].id.channelId;
+                            bot.sendMessage({
+                                to: channelID,
+                                message: result_url
+                            });
+                        }
+                    }
+                });
+            break;
+            
             default:
                 bot.sendMessage({
                     to: channelID,
-                    message: "Sorry, I am still a work in progress and do not support that command yet"
+                    message: "Sorry, I am still a work in progress and do not support that command yet (´·ω·`)"
                 });
         }
     }

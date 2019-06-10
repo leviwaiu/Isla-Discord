@@ -14,8 +14,10 @@ NOTE: Currently auth.json is not included. This would be fixed soon.
 
 ## Current Feature List
 
-Says hello to you.
-(Implementing) Twitter user lookup and display of results into discord.
+- Says hello to you.
+- Twitter user/handle name lookup
+- Youtube Video and Channel search function
+- Roll function (Random Number Generation)
 
 ## Other stuff.
 
