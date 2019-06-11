@@ -20,6 +20,7 @@ Logging is currently barebones and does not log mnay of the actual activity.
 - Twitter user/handle name lookup
 - Youtube Video and Channel search function
 - Roll function (Random Number Generation)
+- (Beta) Pixiv User Display function and latest work show function
 
 ## Other stuff.
 

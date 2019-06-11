@@ -4,6 +4,7 @@ var auth    = require('./auth.json');
 
 var Twitter = require('twitter');
 var YouTube = require('youtube-node');
+var Pixiv   = require('pixiv-app-api');
 
 logger.remove(logger.transports.Console);
 logger.add(new logger.transports.Console, { colorize: true});
@@ -24,6 +25,8 @@ var twitterClient = new Twitter({
 var youtubeClient = new YouTube();
 youtubeClient.setKey(auth.youtube.key);
 
+var pixivClient = new Pixiv(process.env.PIXIVNAME, process.env.PIXIVPASS);
+
 //Log for logging in into discord.
 bot.on('ready', function(evt) {
     logger.info('Connected');
@@ -36,54 +39,81 @@ bot.on('message', function(user, userID, channelID, message, evt) {
         var args = message.substring(1).split(' ');
         var cmd = args[0];
         
-    
+        
         args = args.splice(1);
         switch(cmd){
             
+            case 'debug':
+                logger.info(message.substring(1));
+                bot.sendMessage({
+                    to:channelID,
+                    message:args.filter(word => !word.startsWith("--"))
+                });
+            break;
+                
             case 'die':
                 bot.sendMessage({
                     to:channelID,
                     message:"(◜०﹏०◝) Y u do dis"
                 });
-            break;
-            
+                break;
+                
+            case 'hello':
+                bot.sendMessage({
+                    to: channelID,
+                    message: "Hello! It's nice to see you! (^-^)/"
+                });
+                break;
+                
             case 'help':
                 bot.sendMessage({
                     to: channelID,
                     message: "Here are the list of currently usable commands \n hello \n help \n roll \n twitter \n youtube"
                 });
                 break;
-            
-            case 'hello':
-                bot.sendMessage({
-                    to: channelID,
-                    message: "Hello! It's nice to see you! (^-^)/"
-                });
-            break;
-            
-            case 'twitter':
-                handle = args[0];
-                twitterClient.get('users/show', {screen_name : handle}, function(error, tweet, response) {
-                    if(error) {
-                        if(error[0].code === 50){
-                            bot.sendMessage({
-                                to: channelID,
-                                message: "I can't find the user, sorry... (◜०﹏०◝)"                               
-                            });
-                        } else {
-                        logger.info(error);
-                        throw error;
-                        };
-                    } else {
-                    user_url = "(^▽^)o Here you go: https://twitter.com/" + tweet.screen_name;
+                
+            case 'pixiv':
+                
+                name_search = args.filter(word => !word.startsWith("--")).join(' ');
+                //Promise Based Async
                     bot.sendMessage({
-                        to: channelID,
-                        message: user_url
+                        to:channelID,
+                        message: "Looking up... pixiv is quite slow so please be patient..."
                     });
+                var json;
+                ;(async () => {
+                    json = await pixivClient.searchUser(name_search);
+                    if(json.userPreviews.length > 0){
+                        subargs = args.filter(word => word.startsWith("--"))
+                        logger.info(args);
+                        logger.info(subargs);
+                        switch(subargs[0]){
+                            case '--latest':
+                                latestWork_url = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + json.userPreviews[0].illusts[0].id
+                                bot.sendMessage({
+                                    to: channelID,
+                                    message: latestWork_url
+                                });
+                            break;
+                            
+                            default:
+                                user_id = json.userPreviews[0].user.id;
+                                url = "(^▽^)o Here is your profile: \n https://www.pixiv.net/member.php?id=" + user_id
+                                bot.sendMessage({
+                                    to: channelID,
+                                    message: url
+                                });
+                        }
+                    } else {
+                        bot.sendMessage({
+                            to: channelID,
+                            message: "I can't find the user, sorry... (◜०﹏०◝)"
+                        });
                     }
-                });
-            break;
-            
+                   
+                })() 
+                break;
+                
             case 'roll':
                 numbers = 10;
                 if(args.length > 0){
@@ -107,7 +137,31 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                         message: "What is with that invalid number, baka! ( ꒪Д꒪)ノ"
                     });
                 }
-            break;
+                break;
+                
+            case 'twitter':
+                handle = args[0];
+                twitterClient.get('users/show', {screen_name : handle}, function(error, tweet, response) {
+                    if(error) {
+                        if(error[0].code === 50){
+                            bot.sendMessage({
+                                to: channelID,
+                                message: "I can't find the user, sorry... (◜०﹏०◝)"                               
+                            });
+                        } else {
+                            logger.info(error);
+                            throw error;
+                        };
+                    } else {
+                        user_url = "(^▽^)o Here you go: https://twitter.com/" + tweet.screen_name;
+                        bot.sendMessage({
+                            to: channelID,
+                            message: user_url
+                        });
+                    }
+                });
+                break;
+                
                 
             case 'youtube':
                 search = args.join(" ");
@@ -138,8 +192,8 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                         }
                     }
                 });
-            break;
-            
+                break;
+                
             default:
                 bot.sendMessage({
                     to: channelID,
