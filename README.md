@@ -6,11 +6,13 @@ This is written mainly as a programming exercise.
 
 ## To Use
 
-Before use, please fill in the auth.json that is provided with this repository with your own client ID keys for discord, twitter, and any other API that you wish to use.
+Before use, please fill in the authTemplate.json that is provided with this repository with your own client ID keys for discord, twitter, and any other API that you wish to use.
 
 Should you decide to not sue any of the features given by the API, all but the discord tokens are optional and would need to be filled on only if you want to use it.
 
-NOTE: Currently auth.json is not included. This would be fixed soon.
+Finally, please rename authTemplate.json into auth.json before using the bot. Download all the dependecies through npm and then run the bot in node.
+
+Logging is currently barebones and does not log mnay of the actual activity.
 
 ## Current Feature List
 

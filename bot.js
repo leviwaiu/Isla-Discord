@@ -9,6 +9,7 @@ logger.remove(logger.transports.Console);
 logger.add(new logger.transports.Console, { colorize: true});
 logger.level = 'debug';
 
+//Initialising different API connectons
 var bot = new Discord.Client({
     token: auth.discord.token,
     autorun : true });
@@ -23,11 +24,13 @@ var twitterClient = new Twitter({
 var youtubeClient = new YouTube();
 youtubeClient.setKey(auth.youtube.key);
 
+//Log for logging in into discord.
 bot.on('ready', function(evt) {
     logger.info('Connected');
     logger.info('Login as:' + bot.username + '-(' + bot.id + ')');
 });
 
+//Bot responds to messages sent to her, uses a switch to determine what to respond
 bot.on('message', function(user, userID, channelID, message, evt) {
     if(message.substring(0,1) == "!") {
         var args = message.substring(1).split(' ');
@@ -37,10 +40,17 @@ bot.on('message', function(user, userID, channelID, message, evt) {
         args = args.splice(1);
         switch(cmd){
             
+            case 'die':
+                bot.sendMessage({
+                    to:channelID,
+                    message:"(◜०﹏०◝) Y u do dis"
+                });
+            break;
+            
             case 'help':
                 bot.sendMessage({
                     to: channelID,
-                    message: "Here are the list of currently usable commands \n hello \n help \n roll \n twitter"
+                    message: "Here are the list of currently usable commands \n hello \n help \n roll \n twitter \n youtube"
                 });
                 break;
             
@@ -100,12 +110,13 @@ bot.on('message', function(user, userID, channelID, message, evt) {
             break;
                 
             case 'youtube':
-                search = args.join();
+                search = args.join(" ");
                 youtubeClient.search(search, 1, function(error, result) {
                     if(error) {
                         logger.info(error);
                     }
                     else {
+                        logger.info(result);
                         if(result.items[0].id.kind === "youtube#video"){
                             result_url = "(^▽^)o Here's the top result: \n https://youtube.com/watch?v=" + result.items[0].id.videoId;
                             bot.sendMessage({
@@ -113,7 +124,13 @@ bot.on('message', function(user, userID, channelID, message, evt) {
                                 message: result_url
                             });
                         } else if(result.items[0].id.kind === "youtube#channel") {
-                            result_url = "It seems like the top result is a channel! Here you go: \n https://yotube.com/channel/" + result.items[0].id.channelId;
+                            result_url = "It seems like the top result is a channel! Here you go: \n https://youtube.com/channel/" + result.items[0].id.channelId;
+                            bot.sendMessage({
+                                to: channelID,
+                                message: result_url
+                            });
+                        } else if(result.items[0].id.kind === "youtube#playlist") {
+                            result_url = "It seems like the top result is a playlist! Here you go: \n https://youtube.com/playlist?list=" + result.items[0].id.playlistId;
                             bot.sendMessage({
                                 to: channelID,
                                 message: result_url

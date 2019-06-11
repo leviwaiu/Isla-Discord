@@ -1,6 +1,6 @@
 {
     "name": "PrivateDiscordBot",
-    "version": "0.2.1",
+    "version": "0.2.2a",
     "description": "Prototype for a private chatbot",
     "author": "leviwaiu",
     "main": "bot.js",
