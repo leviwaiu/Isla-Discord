@@ -40,6 +40,8 @@ discordBot.on('message', message => {
         var args = message.content.substring(1).split(' ');
         var command = args[0];
         
+        args.shift();
+
         switch(command){
             case 'debug':
                 logger.info(message.content.substring(1));
