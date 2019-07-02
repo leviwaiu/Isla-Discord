@@ -24,7 +24,7 @@ var twitterClient = new Twitter({
 var youtubeClient = new YouTube();
 youtubeClient.setKey(auth.youtube.key);
 
-var pixivClient = new Pixiv(process.env.PIXIVNAME, process.env.PIXIVPASS);
+var pixivClient = new Pixiv(auth.pixiv.name, auth.pixiv.pass);
 
 var cannedErrorMessage = "Boop... I have broken. Please Contact ISellRamen#0234 for bugfixing.. (ﾉД`)";
 
