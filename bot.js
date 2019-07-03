@@ -7,7 +7,8 @@ var YouTube  = require('youtube-node');
 var Pixiv    = require('pixiv-app-api');
 
 var moment   = require('moment-timezone');
-var geocoder = require('google-geocoder'); 
+var geocoder = require('node-geocoder');
+var tzlookup = require('tz-lookup');
 
 logger.remove(logger.transports.Console);
 logger.add(new logger.transports.Console, {colorize:true});
@@ -29,6 +30,15 @@ var pixivClient = new Pixiv(auth.pixiv.name, auth.pixiv.pass);
 
 var cannedErrorMessage = "Boop... I have broken. Please Contact ISellRamen#0234 for bugfixing.. (ﾉД`)";
 
+var geocodeOptions = {
+    provider: 'locationiq',
+    
+    httpadapter: 'https',
+    apiKey: 'fb10693484ab0c',
+    format: 'gpx'
+}
+
+var Geocoder = geocoder(geocodeOptions);
 
 discordBot.on('ready', () => {
     logger.info('Bot is ready.');
@@ -121,59 +131,16 @@ discordBot.on('message', message => {
             
             case 'time':
                 var current_time = new Date();
-                var loc = "Hong Kong";
-                var displayString = moment.tz(current_time, "Asia/Hong_Kong").format("HH:mm:ss");
+                var search = "Hong Kong";
                 if(args.length > 0){
-                    switch(args.join(' ').toLowerCase()){
-                        case 'hk':
-                        case 'hong kong':
-                        break;
-                        case 'macau':
-                        case 'macao':
-                            displayString = moment.tz(current_time, "Asia/Macau").format("HH:mm:ss");
-                            loc = "Macau";
-                        break;
-                        case 'london':
-                        case 'edinburgh':
-                        case 'uk':
-                            displayString = moment.tz(current_time, "Europe/London").format("HH:mm:ss");
-                            loc = "United Kingdom";
-                        break;
-                        case 'new york':
-                        case 'boston':
-                        case 'washington dc':
-                        case 'dc':
-                            displayString = moment.tz(current_time, "America/New_York").format("HH:mm:ss");
-                            loc = "US East Coast";
-                        break;
-                        
-                        case 'los angeles':
-                        case 'san francisco':
-                        case 'berkeley':
-                            displayString = moment.tz(current_time, "America/Los_Angeles").format("HH:mm:ss");
-                            loc = "US West Coast";
-                        break;
-                        
-                        case 'tokyo':
-                        case 'osaka':
-                        case 'japan':
-                            displayString = moment.tz(current_time, "Asia/Tokyo").format("HH:mm:ss");
-                            loc = "Japan";
-                        break;
-                        
-                        case 'melbourne':
-                        case 'sydney':
-                            displayString = moment.tz(current_time, "Australia/Sydney").format("HH:mm:ss");
-                            loc = "NSW & Victoria of Australia";
-                        break;
-
-                        case 'brisbane':
-                            displayString = moment.tz(current_time, "Australia/Brisbane").format("HH:mm:ss");
-                            loc = "Queensland of Australia";
-                        break;
-                    }
+                    search = args.join(' ');
                 }
-                message.channel.send("The current time in " + loc + " is " + displayString);
+                Geocoder.geocode(search, function(err, res) {
+                    var timezone = tzlookup(res[0].latitude, res[0].longitude);
+                    logger.info(timezone);
+                    var local_time = moment.tz(current_time, timezone).format("HH:mm:ss");
+                    message.channel.send("The current time in " + timezone + " is " + local_time);
+                });
             break;
             
             case 'twitter':
