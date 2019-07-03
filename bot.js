@@ -1,12 +1,13 @@
-var Discord = require('discord.js');
-var logger  = require('winston');
-var auth    = require('./auth.json');
+var Discord  = require('discord.js');
+var logger   = require('winston');
+var auth     = require('./auth.json');
 
-var Twitter = require('twitter');
-var YouTube = require('youtube-node');
-var Pixiv   = require('pixiv-app-api');
+var Twitter  = require('twitter');
+var YouTube  = require('youtube-node');
+var Pixiv    = require('pixiv-app-api');
 
-var moment  = require('moment-timezone');
+var moment   = require('moment-timezone');
+var geocoder = require('google-geocoder'); 
 
 logger.remove(logger.transports.Console);
 logger.add(new logger.transports.Console, {colorize:true});
@@ -158,6 +159,17 @@ discordBot.on('message', message => {
                         case 'japan':
                             displayString = moment.tz(current_time, "Asia/Tokyo").format("HH:mm:ss");
                             loc = "Japan";
+                        break;
+                        
+                        case 'melbourne':
+                        case 'sydney':
+                            displayString = moment.tz(current_time, "Australia/Sydney").format("HH:mm:ss");
+                            loc = "NSW & Victoria of Australia";
+                        break;
+
+                        case 'brisbane':
+                            displayString = moment.tz(current_time, "Australia/Brisbane").format("HH:mm:ss");
+                            loc = "Queensland of Australia";
                         break;
                     }
                 }
