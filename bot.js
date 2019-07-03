@@ -122,7 +122,7 @@ discordBot.on('message', message => {
                 var current_time = new Date();
                 var loc = "Hong Kong";
                 var displayString = moment.tz(current_time, "Asia/Hong_Kong").format("HH:mm:ss");
-                if(args.length > 1){
+                if(args.length > 0){
                     switch(args.join(' ').toLowerCase()){
                         case 'hk':
                         case 'hong kong':
@@ -161,7 +161,7 @@ discordBot.on('message', message => {
                         break;
                     }
                 }
-                message.channel.send("The current time in" + loc + " is " + displayString);
+                message.channel.send("The current time in " + loc + " is " + displayString);
             break;
             
             case 'twitter':
