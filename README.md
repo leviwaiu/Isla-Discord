@@ -1,5 +1,8 @@
 # This is a readme.
 
+## Note: This bot is currently not under development, but is expected to recieve an overhaul in the near future.
+
+
 The following is a bot that is written for a private server in discord. It includes generally vanilla code but may have influences and snippets from other existing solutions.
 
 This is written mainly as a programming exercise.
@@ -12,7 +15,7 @@ Should you decide to not sue any of the features given by the API, all but the d
 
 Finally, please rename authTemplate.json into auth.json before using the bot. Download all the dependecies through npm and then run the bot in node.
 
-Logging is currently barebones and does not log mnay of the actual activity.
+Logging is currently barebones and does not log many of the actual activity.
 
 ## Current Feature List
 
