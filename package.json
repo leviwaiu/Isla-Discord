@@ -1,5 +1,5 @@
 {
-    "name": "PrivateDiscordBot",
+    "name": "private_discord_bot",
     "version": "1.1.2",
     "description": "Prototype for a private chatbot",
     "author": "leviwaiu",
@@ -13,7 +13,7 @@
         "discord.js": "^11.5.1",
         "moment-timezone": "^0.5.25",
         "node-geocoder": "^3.23.0",
-        "pixiv-app-api": "^0.12.1",
+        "pixiv-app-api": "^0.3.0",
         "twitter": "^1.7.1",
         "tz-lookup": "^6.1.18",
         "winston": "^3.2.1",
